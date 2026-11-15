@@ -1,0 +1,201 @@
+{
+  "brand": "LUMINA OPTICS",
+  "nav": {
+    "collection": "Collection",
+    "tryOn": "AI Try-On",
+    "orders": "Orders",
+    "store": "Flagship",
+    "admin": "Admin",
+    "staff": "Workshop",
+    "cart": "Bag",
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
+  },
+  "announcement": "Free delivery within 3km of Tan Binh Flagship · Automatic 15% VIP privilege on orders from 2,000,000₫",
+  "hero": {
+    "kicker": "Optical Atelier · Ho Chi Minh City",
+    "title": "Architectural eyewear tailored to your facial geometry",
+    "subtitle": "Explore handcrafted Japanese Beta-Titanium and botanical Acetate frames. Measure your face shape with AI Try-On and order precision prescription lenses.",
+    "ctaExplore": "Explore Collection",
+    "ctaTryOn": "Launch AI Try-On"
+  },
+  "filters": {
+    "title": "6-Dimensional Filters",
+    "searchPlaceholder": "Search frame name, SKU...",
+    "resetAll": "Reset all filters",
+    "openMobile": "Filter & Search",
+    "resultsCount": "Showing {{count}} frames",
+    "noResults": "No frames match your filters. Try resetting filters.",
+    "faceShape": {
+      "label": "Face Shape",
+      "ALL": "All",
+      "ROUND": "Round",
+      "SQUARE": "Square",
+      "OVAL": "Oval",
+      "LONG": "Long"
+    },
+    "frameStyle": {
+      "label": "Frame Style",
+      "ALL": "All",
+      "SQUARE": "Square",
+      "ROUND": "Round",
+      "CAT_EYE": "Cat-Eye",
+      "AVIATOR": "Aviator",
+      "RIMLESS": "Rimless",
+      "BROWLINE": "Browline"
+    },
+    "material": {
+      "label": "Material",
+      "ALL": "All",
+      "TITANIUM": "Beta-Titanium",
+      "ACETATE": "Acetate",
+      "METAL_PVD": "PVD Metal",
+      "TR90": "TR90 Polymer"
+    },
+    "gender": {
+      "label": "Target",
+      "ALL": "All",
+      "MALE": "Men",
+      "FEMALE": "Women",
+      "UNISEX": "Unisex",
+      "KIDS": "Kids"
+    },
+    "colorTone": {
+      "label": "Color Tone",
+      "ALL": "All",
+      "BLACK": "Obsidian Black",
+      "TORTOISE": "Tortoiseshell",
+      "SILVER": "Brushed Silver",
+      "GOLD": "Champagne Gold",
+      "ROSE": "Crystal Rose",
+      "CLEAR_CRYSTAL": "Clear Crystal"
+    },
+    "priceRange": {
+      "label": "Price Tier",
+      "ALL": "All",
+      "UNDER_500K": "Under 500,000₫",
+      "BETWEEN_500K_1M": "500,000₫ - 1,000,000₫",
+      "BETWEEN_1M_2M": "1,000,000₫ - 2,000,000₫",
+      "OVER_2M": "Over 2,000,000₫ (VIP)"
+    }
+  },
+  "product": {
+    "addToCart": "Add to Bag",
+    "addedCheck": "Added ✓",
+    "tryOnAi": "AI Try-On",
+    "viewDetails": "Details",
+    "inStock": "{{count}} in stock",
+    "specs": "Frame Dimensions",
+    "width": "Frame Width",
+    "bridge": "Bridge",
+    "temple": "Temple",
+    "suitableFaces": "Best for Face Shapes",
+    "lensConfigTitle": "Lens Configuration",
+    "lensOptions": {
+      "FRAME_ONLY": "Frame Only (Demo 0.00 Lenses)",
+      "BLUE_LIGHT": "0.00 Blue-Light Filtering Lenses",
+      "PHOTOCHROMIC": "0.00 Photochromic Sun-Adaptive Lenses",
+      "PRESCRIPTION": "Custom Prescription Lenses (Rx)"
+    },
+    "rxTitle": "Prescription Parameters",
+    "rxRight": "Right Eye (OD)",
+    "rxLeft": "Left Eye (OS)",
+    "rxPd": "Pupillary Distance (PD mm)",
+    "rxUpload": "Or upload optical prescription photo",
+    "reviewsTitle": "Verified Customer Reviews",
+    "verifiedPurchase": "Verified Purchase",
+    "writeReview": "Write a review for your delivered frame",
+    "submitReview": "Submit Review",
+    "reviewEligibilityHint": "Only customers with a COMPLETED order containing this frame can submit a review."
+  },
+  "cart": {
+    "title": "Your Shopping Bag",
+    "empty": "Your bag is empty. Explore our optical collection.",
+    "subtotal": "Subtotal",
+    "checkout": "Proceed to Checkout",
+    "continue": "Continue Browsing",
+    "remove": "Remove"
+  },
+  "tryOn": {
+    "title": "AI Virtual Try-On & Face Analysis",
+    "authRequiredTitle": "Sign in to unlock AI Virtual Try-On",
+    "authRequiredDesc": "Our Gemini AI facial proportion analysis requires Google/Gmail authentication to protect daily token quotas (20 analyses/day).",
+    "quotaLabel": "Daily Quota",
+    "startCamera": "Enable Live Camera",
+    "stopCamera": "Stop Camera",
+    "uploadPhoto": "Upload Portrait Photo",
+    "analyzeBtn": "Analyze Face Shape with AI",
+    "analyzing": "AI is measuring facial geometry...",
+    "adjustOverlay": "Fine-tune Frame Fit",
+    "scale": "Frame Scale",
+    "verticalOffset": "Bridge Height",
+    "rotation": "Tilt Angle",
+    "recommendationTitle": "AI Proportion Diagnosis & Picks"
+  },
+  "checkout": {
+    "title": "Secure Checkout & Delivery",
+    "customerInfo": "Recipient Details",
+    "fullName": "Full Name",
+    "email": "Email (For Gmail Order Updates)",
+    "phone": "Phone Number",
+    "address": "Detailed Street Address",
+    "zonePreset": "Delivery Zone (Distance from 294 Pham Van Bach)",
+    "distance": "Estimated Road Distance (Haversine × 1.35)",
+    "shippingFee": "Shipping Fee",
+    "freeship": "Free Delivery (0₫)",
+    "voucherLabel": "Promo / Holiday Voucher",
+    "voucherPlaceholder": "Enter EYEWEAR10 or TET2026",
+    "applyVoucher": "Apply",
+    "autoTierApplied": "Best automatic discount applied",
+    "discount": "Discount",
+    "total": "Total Amount",
+    "paymentMethod": "Payment Method",
+    "qrMethod": "QR Code / VietQR Transfer (Fast Verification)",
+    "codMethod": "Cash on Delivery (COD)",
+    "placeOrder": "Place Order",
+    "qrInstructionTitle": "Scan QR Code to Complete Payment",
+    "copyAccount": "Copy Account No",
+    "copyNote": "Copy Transfer Note",
+    "copied": "Copied!",
+    "transferContent": "Required Transfer Reference",
+    "gmailSent": "Gmail confirmation dispatched to {{email}}"
+  },
+  "orders": {
+    "title": "Order History & Live Status",
+    "empty": "You have no orders yet.",
+    "status": {
+      "PENDING": "Awaiting QR Verification",
+      "ARRANGING": "Lens Crafting in Lab",
+      "READY": "Crafted · Ready to Ship",
+      "SHIPPING": "Out for Delivery",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "payment": {
+      "UNPAID": "Unpaid",
+      "PAID": "Paid"
+    }
+  },
+  "admin": {
+    "title": "LUMINA OPTICS Admin Console",
+    "tabs": {
+      "qrApproval": "QR Payment Approval",
+      "products": "Catalog & Inventory",
+      "settings": "Shop QR Settings",
+      "reviews": "Review Moderation"
+    },
+    "approveQrBtn": "Approve QR Payment",
+    "saveSettings": "Save QR Configuration"
+  },
+  "staff": {
+    "title": "Optical Lab Kanban Board",
+    "subtitle": "Manage prescription lens edging and shipment dispatch",
+    "advanceBtn": "Advance Stage"
+  },
+  "store": {
+    "title": "Flagship Optical Atelier",
+    "address": "294 Pham Van Bach, Tan Son Ward, Tan Binh District, HCMC",
+    "hours": "08:30 – 21:00 Daily (Weekends Open)",
+    "openGoogleMaps": "Open in Google Maps"
+  }
+}

@@ -1,0 +1,201 @@
+{
+  "brand": "LUMINA OPTICS",
+  "nav": {
+    "collection": "Bộ sưu tập",
+    "tryOn": "Thử kính AI",
+    "orders": "Đơn hàng",
+    "store": "Cửa hàng",
+    "admin": "Quản trị",
+    "staff": "Xưởng tròng",
+    "cart": "Giỏ hàng",
+    "signIn": "Đăng nhập",
+    "signOut": "Đăng xuất"
+  },
+  "announcement": "Miễn phí giao hàng bán kính 3km từ Flagship Tân Bình · Ưu đãi 15% đơn VIP từ 2.000.000₫",
+  "hero": {
+    "kicker": "Xưởng Kính Thủ Công · TP. Hồ Chí Minh",
+    "title": "Định hình thị lực chuẩn mực cho từng đường nét gương mặt",
+    "subtitle": "Khám phá bộ sưu tập gọng Titanium Nhật Bản và Acetate tự nhiên. Đo dáng mặt bằng AI trực tiếp và cắt tròng theo đơn thuốc chuẩn xác.",
+    "ctaExplore": "Khám phá bộ sưu tập",
+    "ctaTryOn": "Thử kính AI ngay"
+  },
+  "filters": {
+    "title": "Bộ lọc 6 chiều",
+    "searchPlaceholder": "Tìm tên gọng, mã SKU...",
+    "resetAll": "Xóa tất cả bộ lọc",
+    "openMobile": "Lọc & Tìm kiếm",
+    "resultsCount": "Hiển thị {{count}} mẫu gọng",
+    "noResults": "Không tìm thấy mẫu gọng phù hợp. Hãy thử đặt lại bộ lọc.",
+    "faceShape": {
+      "label": "Dáng mặt",
+      "ALL": "Tất cả",
+      "ROUND": "Mặt tròn",
+      "SQUARE": "Mặt vuông",
+      "OVAL": "Mặt trái xoan",
+      "LONG": "Mặt dài"
+    },
+    "frameStyle": {
+      "label": "Kiểu gọng",
+      "ALL": "Tất cả",
+      "SQUARE": "Gọng vuông",
+      "ROUND": "Gọng tròn",
+      "CAT_EYE": "Mắt mèo",
+      "AVIATOR": "Phi công",
+      "RIMLESS": "Khoan không viền",
+      "BROWLINE": "Nửa gọng"
+    },
+    "material": {
+      "label": "Chất liệu",
+      "ALL": "Tất cả",
+      "TITANIUM": "Titanium siêu nhẹ",
+      "ACETATE": "Nhựa Acetate",
+      "METAL_PVD": "Kim loại mạ PVD",
+      "TR90": "Nhựa dẻo TR90"
+    },
+    "gender": {
+      "label": "Đối tượng",
+      "ALL": "Tất cả",
+      "MALE": "Nam",
+      "FEMALE": "Nữ",
+      "UNISEX": "Unisex",
+      "KIDS": "Trẻ em"
+    },
+    "colorTone": {
+      "label": "Màu sắc",
+      "ALL": "Tất cả",
+      "BLACK": "Đen cổ điển",
+      "TORTOISE": "Đồi mồi",
+      "SILVER": "Bạc ánh kim",
+      "GOLD": "Vàng Gold",
+      "ROSE": "Hồng Pastel",
+      "CLEAR_CRYSTAL": "Trong suốt"
+    },
+    "priceRange": {
+      "label": "Khoảng giá",
+      "ALL": "Tất cả",
+      "UNDER_500K": "Dưới 500.000₫",
+      "BETWEEN_500K_1M": "500.000₫ - 1.000.000₫",
+      "BETWEEN_1M_2M": "1.000.000₫ - 2.000.000₫",
+      "OVER_2M": "Trên 2.000.000₫ (VIP)"
+    }
+  },
+  "product": {
+    "addToCart": "Thêm vào giỏ",
+    "addedCheck": "Đã thêm ✓",
+    "tryOnAi": "Thử kính AI",
+    "viewDetails": "Chi tiết",
+    "inStock": "Còn {{count}} sản phẩm",
+    "specs": "Thông số gọng",
+    "width": "Rộng gọng",
+    "bridge": "Cầu mũi",
+    "temple": "Càng kính",
+    "suitableFaces": "Phù hợp dáng mặt",
+    "lensConfigTitle": "Cấu hình tròng kính",
+    "lensOptions": {
+      "FRAME_ONLY": "Chỉ mua gọng (Tròng mẫu 0 độ)",
+      "BLUE_LIGHT": "Tròng 0 độ Chống ánh sáng xanh",
+      "PHOTOCHROMIC": "Tròng 0 độ Đổi màu ra nắng",
+      "PRESCRIPTION": "Lắp tròng có độ (Cận / Viễn / Loạn)"
+    },
+    "rxTitle": "Thông số độ mắt (Đơn thuốc)",
+    "rxRight": "Mắt phải (OD)",
+    "rxLeft": "Mắt trái (OS)",
+    "rxPd": "Khoảng cách đồng tử (PD mm)",
+    "rxUpload": "Hoặc tải ảnh phiếu đo thị lực",
+    "reviewsTitle": "Đánh giá từ khách đã mua",
+    "verifiedPurchase": "Đã mua hàng thực tế",
+    "writeReview": "Viết đánh giá cho sản phẩm đã nhận",
+    "submitReview": "Gửi đánh giá",
+    "reviewEligibilityHint": "Chỉ khách hàng có đơn hàng hoàn tất (COMPLETED) chứa sản phẩm này mới được gửi đánh giá."
+  },
+  "cart": {
+    "title": "Giỏ hàng của bạn",
+    "empty": "Giỏ hàng đang trống. Chọn ngay mẫu gọng ưng ý!",
+    "subtotal": "Tạm tính",
+    "checkout": "Tiến hành thanh toán",
+    "continue": "Tiếp tục xem gọng",
+    "remove": "Xóa"
+  },
+  "tryOn": {
+    "title": "Thử Kính Ảo AI & Đo Dáng Mặt",
+    "authRequiredTitle": "Đăng nhập để mở khóa Thử kính AI",
+    "authRequiredDesc": "Tính năng phân tích khuôn mặt bằng AI yêu cầu đăng nhập tài khoản Google/Gmail để bảo vệ hạn mức token (20 lượt/ngày).",
+    "quotaLabel": "Hạn mức hôm nay",
+    "startCamera": "Bật Camera trực tiếp",
+    "stopCamera": "Tắt Camera",
+    "uploadPhoto": "Tải ảnh chân dung",
+    "analyzeBtn": "Phân tích dáng mặt với AI",
+    "analyzing": "AI đang đo tỷ lệ gương mặt...",
+    "adjustOverlay": "Căn chỉnh vị trí gọng kính",
+    "scale": "Tỷ lệ gọng",
+    "verticalOffset": "Độ cao sống mũi",
+    "rotation": "Góc nghiêng",
+    "recommendationTitle": "Kết quả phân tích & Đề xuất"
+  },
+  "checkout": {
+    "title": "Thanh toán & Giao hàng",
+    "customerInfo": "Thông tin người nhận",
+    "fullName": "Họ và tên",
+    "email": "Email (Nhận thông báo Gmail)",
+    "phone": "Số điện thoại",
+    "address": "Địa chỉ giao hàng chi tiết",
+    "zonePreset": "Khu vực giao hàng (Tính cự ly từ 294 Phạm Văn Bạch)",
+    "distance": "Cự ly đường bộ (Haversine × 1.35)",
+    "shippingFee": "Phí vận chuyển",
+    "freeship": "Miễn phí (0₫)",
+    "voucherLabel": "Mã ưu đãi / Khuyến mãi",
+    "voucherPlaceholder": "Nhập EYEWEAR10 hoặc TET2026",
+    "applyVoucher": "Áp dụng",
+    "autoTierApplied": "Tự động áp dụng ưu đãi tốt nhất",
+    "discount": "Giảm giá",
+    "total": "Tổng thanh toán",
+    "paymentMethod": "Phương thức thanh toán",
+    "qrMethod": "Chuyển khoản QR Code / VietQR (Duyệt nhanh)",
+    "codMethod": "Thanh toán khi nhận hàng (COD)",
+    "placeOrder": "Xác nhận đặt hàng",
+    "qrInstructionTitle": "Quét mã QR để hoàn tất thanh toán",
+    "copyAccount": "Sao chép STK",
+    "copyNote": "Sao chép nội dung CK",
+    "copied": "Đã sao chép!",
+    "transferContent": "Nội dung chuyển khoản bắt buộc",
+    "gmailSent": "Đã gửi email xác nhận đơn hàng qua Gmail tới {{email}}"
+  },
+  "orders": {
+    "title": "Lịch sử & Theo dõi đơn hàng",
+    "empty": "Bạn chưa có đơn hàng nào.",
+    "status": {
+      "PENDING": "Chờ duyệt QR",
+      "ARRANGING": "Đang gia công tròng",
+      "READY": "Đã lắp xong · Chờ giao",
+      "SHIPPING": "Đang vận chuyển",
+      "COMPLETED": "Hoàn tất",
+      "CANCELLED": "Đã hủy"
+    },
+    "payment": {
+      "UNPAID": "Chưa thanh toán",
+      "PAID": "Đã thanh toán"
+    }
+  },
+  "admin": {
+    "title": "Bảng Quản Trị LUMINA OPTICS",
+    "tabs": {
+      "qrApproval": "Duyệt Tiền QR",
+      "products": "Sản phẩm & Kho",
+      "settings": "Cấu hình QR Shop",
+      "reviews": "Kiểm duyệt Đánh giá"
+    },
+    "approveQrBtn": "Phê duyệt đã nhận tiền",
+    "saveSettings": "Lưu cấu hình QR"
+  },
+  "staff": {
+    "title": "Bảng Điều Phối Xưởng Kỹ Thuật Tròng",
+    "subtitle": "Cập nhật tiến độ mài lắp tròng và xuất giao vận",
+    "advanceBtn": "Chuyển bước tiếp theo"
+  },
+  "store": {
+    "title": "Hệ thống Cửa hàng Flagship",
+    "address": "294 Phạm Văn Bạch, Phường Tân Sơn, Quận Tân Bình, TP.HCM",
+    "hours": "08:30 – 21:00 mỗi ngày (Cả Thứ 7 & Chủ Nhật)",
+    "openGoogleMaps": "Mở chỉ đường Google Maps"
+  }
+}

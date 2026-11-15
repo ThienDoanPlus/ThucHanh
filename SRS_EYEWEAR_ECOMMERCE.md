@@ -1,0 +1,476 @@
+# TÀI LIỆU ĐẶC TẢ YÊU CẦU NGHIỆP VỤ & KỸ THUẬT (SRS)
+
+**Dự án:** Hệ thống Thương mại Điện tử Mắt Kính Trực Tuyến & Thử Kính AI (Eyewear E-Commerce Platform)  
+**Phiên bản:** 1.0.0  
+**Vai trò biên soạn:** Senior Business Analyst & Lead Architect  
+**Đối tượng sử dụng:** Frontend Dev, Backend Dev, QA/Tester, DevOps, UI/UX  
+
+---
+
+## 1. TỔNG QUAN DỰ ÁN & CHUẨN HÓA NGHIỆP VỤ
+
+### 1.1 Mục tiêu hệ thống
+Xây dựng nền tảng bán mắt kính trực tuyến chuẩn hiện đại, tối giản, tốc độ cao, hỗ trợ song ngữ (**Tiếng Việt / Tiếng Anh**). Hệ thống giải quyết triệt để các bài toán đặc thù của ngành kính mắt:
+- Lọc và tư vấn gọng kính chuẩn theo dáng mặt (**6 chiều**).
+- Trải nghiệm thử kính ảo bằng **AI Virtual Try-On** ngay trên trình duyệt (yêu cầu đăng nhập để bảo vệ hạn mức tài nguyên/token).
+- Đặt hàng đa tùy chọn (chỉ gọng / kèm tròng cận-loạn-chống ánh sáng xanh) với giỏ hàng UX mượt mà trên di động.
+- Tính phí vận chuyển chính xác theo khoảng cách thực tế, chống trục lợi mã giảm giá và quy trình đối soát thanh toán QR Code chặt chẽ.
+
+### 1.2 Ghi chú chuẩn hóa từ BA (Dành cho đội ngũ phát triển)
+- **Đồng bộ Domain (Mắt kính):** Toàn bộ cấu trúc mã nguồn, Database, UI/UX chuẩn hóa theo ngành Mắt kính (*Eyewear / Product*). Các dữ liệu hình ảnh và bảng giá sản phẩm đã có sẵn từ khách hàng sẽ được nạp hàng loạt qua Script Seed (upload ảnh lên Cloudinary và lưu URL vào TiDB). *(Lưu ý: Các mã voucher kế thừa như `ROSE10` có thể giữ làm alias song song với `EYEWEAR10` nếu chạy chiến dịch truyền thông cũ).*
+- **Làm rõ Kiến trúc Frontend (Web vs. Mobile):**
+  - **Giai đoạn 1 (Phạm vi tài liệu này):** Triển khai Web Responsive (Mobile-First) sử dụng React + TypeScript + Vite + Tailwind CSS + Redux Toolkit + React Router v6.
+  - **Định hướng mở rộng (Phase 2 - React Native):** Toàn bộ tầng xử lý logic nghiệp vụ, gọi API (`services`), quản lý state toàn cục (`store` Redux) và hooks được viết tách biệt khỏi UI Component để có thể tái sử dụng tối đa khi phát triển ứng dụng React Native + React Navigation trong tương lai.
+- **Cơ chế Thanh toán QR Code:** Hỗ trợ hiển thị mã QR do chủ cửa hàng cung cấp (lưu trữ cấu hình qua Cloudinary/ENV) kết hợp chuẩn **VietQR (Napas 24/7)** tự động sinh thông tin số tiền chính xác và nội dung chuyển khoản theo mã đơn hàng `KINH [Mã đơn]`.
+
+---
+
+## 2. KIẾN TRÚC CÔNG NGHỆ & HẠ TẦNG (TECH STACK)
+
+| Tầng hệ thống | Công nghệ chỉ định | Vai trò & Mục đích sử dụng |
+| :--- | :--- | :--- |
+| **Frontend (Client)** | React 18+, TypeScript, Vite, Tailwind CSS | Giao diện Component-based, tối ưu bundle size, an toàn kiểu dữ liệu |
+| **State & Routing** | Redux Toolkit, React Router v6 | Quản lý Global State (Cart, Auth, Filter, i18n, Notification) & điều hướng |
+| **Đa ngôn ngữ (i18n)** | `react-i18next` (`vi`, `en`) | Chuyển đổi ngôn ngữ tức thì toàn bộ UI, thông báo lỗi và email |
+| **Backend (API)** | Python / Django + Django Rest Framework (DRF) | Xây dựng RESTful API chuẩn bảo mật, phân quyền RBAC, xử lý nghiệp vụ |
+| **Database** | TiDB (MySQL 8.0 Compatible Distributed SQL) | Lưu trữ dữ liệu quan hệ, đánh index tối ưu truy vấn đơn hàng & người dùng |
+| **Media Storage** | Cloudinary | Lưu trữ ảnh sản phẩm, ảnh đơn thuốc, tài sản phủ kính AR (WebP tự động) |
+| **Auth & Push** | Firebase (FCM + Google OAuth) & Gmail SMTP/API | Đăng nhập/Đăng ký Google/Gmail, Push Notification trạng thái đơn, gửi Email xác nhận |
+| **AI & Maps** | WebAR / MediaPipe Face Mesh + Google Maps / Distance Matrix API | Nhận diện khuôn mặt thử kính ảo & định vị bản đồ, tính khoảng cách giao hàng |
+| **DevOps & Deploy** | Docker & Docker Compose, Vercel (FE), Cloud/VPS (BE) | Đóng gói môi trường đồng nhất, CI/CD tự động |
+| **Testing** | Vitest + React Testing Library (FE), Pytest (BE) | Kiểm thử đơn vị (Unit Test) cho 100% các hàm xử lý logic nghiệp vụ |
+
+---
+
+## 3. KIẾN TRÚC THƯ MỤC & QUY CHUẨN MÃ NGUỒN (CODE CONVENTIONS)
+
+### 3.1 Cấu trúc thư mục tách biệt Backend & Frontend
+
+```text
+eyewear-ecommerce/
+├── docker-compose.yml               # Điều phối local dev (BE, FE, Redis nếu cần)
+├── SRS_EYEWEAR_ECOMMERCE.md         # Tài liệu đặc tả nghiệp vụ
+├── PROJECT_RULES.md                 # Chỉ thị kỹ thuật bắt buộc cho AI & Dev
+│
+├── backend/                         # Django Rest Framework
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   ├── manage.py
+│   ├── config/                      # Settings (base, dev, prod), urls, wsgi
+│   ├── apps/
+│   │   ├── users/                   # Auth, Gmail OAuth, RBAC, FCM Token
+│   │   ├── products/                # Danh mục, Gọng kính, Bộ lọc 6 chiều, Cloudinary
+│   │   ├── orders/                  # Giỏ hàng, Tính ship, Đơn hàng, VietQR, Kanban
+│   │   ├── promotions/              # Voucher, Anti-Abuse Engine, Bulk discount
+│   │   ├── reviews/                 # Đánh giá & Bình luận (Verified Purchase)
+│   │   ├── ai_tryon/                # Quota token, Log thử kính AI, Gợi ý dáng mặt
+│   │   └── notifications/           # Firebase FCM, Gmail Service, In-app alerts
+│   └── tests/                       # Pytest Unit & Integration Tests
+│
+└── frontend/                        # React + Vite + TypeScript + Tailwind
+    ├── Dockerfile
+    ├── vercel.json                  # Cấu hình rewrite SPA cho Vercel
+    ├── package.json
+    ├── vite.config.ts
+    ├── tsconfig.json
+    └── src/
+        ├── assets/                  # Icons, fonts, static fallback images
+        ├── i18n/                    # locales/vi.json, locales/en.json
+        ├── store/                   # Redux Toolkit (slices: auth, cart, filter, ui, notification)
+        ├── services/                # Axios/Fetch async API clients (ES6+ async/await)
+        ├── hooks/                   # Custom hooks (useDebounce, useTryOn, useAuth...)
+        ├── utils/                   # Pure functions (haversine, voucherValidator, formatters)
+        ├── types/                   # TypeScript interfaces/types dùng chung
+        ├── components/
+        │   ├── common/              # Button, Modal, Badge, LanguageSwitcher, Skeleton
+        │   ├── layout/              # Header, Footer, MobileBottomBar, SocialFloatingHub
+        │   ├── storefront/          # ProductCard, FilterSidebar, FilterBottomSheet
+        │   ├── cart/                # CartDrawer, CartItemRow
+        │   ├── tryon/               # VirtualTryOnModal, FaceShapeDetector
+        │   ├── checkout/            # ShippingCalculator, VietQRPaymentBox
+        │   └── admin/               # AdminLayout, RevenueCharts, VietQRApprovalTable
+        ├── pages/                   # HomePage, ProductDetailPage, CheckoutPage, StaffKanbanPage...
+        └── __tests__/               # Vitest Unit Tests cho toàn bộ utils, slices, hooks
+```
+
+### 3.2 Quy chuẩn lập trình (Coding Standards)
+- **TypeScript nghiêm ngặt:** Bật `"strict": true` trong `tsconfig.json`. Nghiêm cấm dùng `any` (trừ trường hợp bất khả kháng có chú thích lý do).
+- **ES6+ & Bất đồng bộ (Async):** Sử dụng `async/await` kết hợp `try/catch` chuẩn mực; dùng `Promise.all()` / `Promise.allSettled()` khi gọi nhiều API độc lập để giảm độ trễ.
+- **Quy tắc Comment & Đặt tên:**
+  - Đặt tên biến, hàm tường minh theo ngữ cảnh nghiệp vụ (ví dụ: `calculateUrbanRoadDistanceKm`, `isHolidayVoucherUsedInCurrentYear`).
+  - Không comment giải thích những dòng code hiển nhiên. Chỉ viết comment khi giải thích thuật ngữ chuyên ngành (VD: PD - Pupillary Distance, SPH/CYL), công thức toán học (VD: hệ số 1.35 trong Haversine), hoặc logic nghiệp vụ phức tạp (VD: cơ chế khóa voucher theo năm dương lịch).
+- **Quy tắc React Hooks:**
+  - 100% Hooks (`useState`, `useEffect`, `useMemo`, `useCallback`, `useRef`) phải đặt ở tầng trên cùng của Component.
+  - Tuyệt đối không đặt Hook sau câu lệnh `if (...) return ...`.
+  - Mọi `useEffect` có `setTimeout`, `setInterval`, `EventListener` hoặc Camera Stream bắt buộc có hàm cleanup để chống Memory Leak.
+
+---
+
+## 4. ĐẶC TẢ CÁC PHÂN HỆ CHỨC NĂNG CỐT LÕI
+
+### 4.1 Phân hệ 1: Storefront & Bộ lọc 6 chiều (6-Dimensional Filters)
+**Mục tiêu:** Giúp khách hàng nhanh chóng tìm thấy mẫu gọng kính chuẩn xác với cấu trúc khuôn mặt và ngân sách.
+
+**6 Tiêu chí lọc chuẩn ngành kính mắt:**
+1. **Dáng mặt (`faceShape`):** Tất cả, Mặt tròn (`ROUND` - hợp gọng vuông/chữ nhật), Mặt vuông (`SQUARE` - hợp gọng tròn/oval), Mặt trái xoan (`OVAL` - hợp mọi dáng), Mặt dài (`LONG` - hợp gọng bản to/Clubmaster).
+2. **Kiểu dáng gọng (`frameStyle`):** Tất cả, Gọng vuông (`SQUARE`), Gọng tròn (`ROUND`), Gọng mắt mèo (`CAT_EYE`), Gọng phi công (`AVIATOR`), Gọng khoan không viền (`RIMLESS`), Nửa gọng (`BROWLINE`).
+3. **Chất liệu (`material`):** Titanium không gỉ siêu nhẹ (`TITANIUM`), Nhựa Acetate tự nhiên (`ACETATE`), Kim loại mạ PVD (`METAL_PVD`), Nhựa dẻo siêu bền (`TR90`).
+4. **Đối tượng (`gender`):** Nam (`MALE`), Nữ (`FEMALE`), Unisex (`UNISEX`), Trẻ em chống gãy (`KIDS`).
+5. **Màu sắc (`colorTone`):** Đen cổ điển, Đồi mồi, Bạc ánh kim, Vàng Gold, Hồng Pastel, Trong suốt (`CLEAR_CRYSTAL`).
+6. **Khoảng giá (`priceRange`):** `< 500.000₫`, `500.000₫ - 1.000.000₫`, `1.000.000₫ - 2.000.000₫`, `> 2.000.000₫` (VIP).
+
+**Quy tắc UI/UX & Kỹ thuật:**
+- Hỗ trợ chọn nhanh trên Mobile (Slide-over Filter Bottom Sheet) và Desktop (Thanh lọc nhanh ngang + Sidebar Accordion bên trái).
+- Nút "Xóa tất cả bộ lọc" (`RESET_ALL_FILTERS`) đưa URL query params và Redux Filter state về mặc định.
+- Trạng thái lọc được đồng bộ lên URL Query String (VD: `?faceShape=ROUND&material=TITANIUM`) để khách hàng có thể chia sẻ link hoặc bấm Back trình duyệt không mất bộ lọc.
+
+### 4.2 Phân hệ 2: Trải nghiệm Thêm vào giỏ & Điều hướng Giỏ hàng
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Customer as Khách hàng
+    participant Card as ProductCard
+    participant Cart as Redux Cart / Header
+    participant Drawer as CartDrawer
+
+    Customer->>Card: Bấm "Thêm vào giỏ"
+    Card->>Cart: Dispatch addToCart(item)
+    Note over Cart: isCartOpen GIỮ NGUYÊN = false
+    Card->>Card: Đổi nhãn nút thành "Đã thêm ✓" (1400ms)
+    Cart->>Cart: Kích hoạt @keyframes cartBump (±14° 0.65s)
+    Cart->>Cart: Kích hoạt @keyframes badgePop & flyItemFade (+1 👓)
+    Customer->>Drawer: Chủ động mở Drawer xem giỏ
+    Customer->>Drawer: Bấm vào tên/ảnh sản phẩm
+    Drawer->>Drawer: Đóng CartDrawer (isCartOpen = false)
+    Drawer->>Customer: Điều hướng tới /san-pham/:slug & scrollTo(0, 0)
+```
+
+**Quy tắc Add-to-cart:**
+- Hành vi "Thêm vào giỏ" **không bao giờ** tự ý mở `CartDrawer` che khuất màn hình khi khách đang xem danh mục.
+- Phản hồi thị giác tức thì bằng hoạt ảnh CSS chuyên dụng:
+  - `@keyframes cartBump`: Rung nảy xoay lắc $\pm 14^\circ$ icon giỏ hàng trong 0.65s.
+  - `@keyframes badgePop`: Bong bóng số lượng nảy từ $0.6\times \rightarrow 1.5\times \rightarrow 1.0\times$.
+  - `@keyframes flyItemFade`: Hạt nổi `+1 👓` bay lên trên và mờ dần trong 0.85s.
+- Nút tại `ProductCard` đổi nhãn sang "Đã thêm ✓" trong đúng 1400ms (nhớ clear timer khi unmount).
+
+**Quy tắc Tương tác trong Giỏ hàng:**
+- Mọi sản phẩm trong `CartDrawer` (ảnh đại diện, tên gọng kính, nút xem chi tiết) đều cho phép click để tự động đóng ngăn kéo giỏ hàng, điều hướng tới `/san-pham/:slug` và gọi `window.scrollTo({ top: 0, behavior: 'smooth' })`.
+- Giỏ hàng hỗ trợ lưu tạm ở `localStorage` cho khách vãng lai (Guest) và tự động gộp (`mergeGuestCart`) vào giỏ hàng trên server ngay khi khách đăng nhập.
+
+### 4.3 Phân hệ 3: Trải nghiệm Thử Kính Ảo AI (AI Virtual Try-On) & Bảo vệ Token
+**Mục tiêu:** Cho phép khách hàng mở camera (hoặc tải ảnh chân dung) để AI nhận diện khuôn mặt, đo tỷ lệ gợi ý dáng mặt và ướm thử gọng kính 2D/AR trực tiếp theo thời gian thực.
+
+**Quy tắc bảo mật & chống tiêu hao Token (Bắt buộc):**
+- **Yêu cầu Đăng nhập (Auth Guard):** Chỉ người dùng đã đăng nhập (`CUSTOMER`, `STAFF`, `ADMIN`) mới được kích hoạt tính năng AI Try-On. Nếu khách vãng lai (Guest) bấm nút "Thử kính AI", hệ thống mở Modal yêu cầu Đăng nhập nhanh bằng Gmail/Google và ghi chú lý do bảo vệ quyền lợi trải nghiệm.
+- **Kiểm soát hạn mức (Rate Limiting & Quota):**
+  - Backend kiểm tra JWT Token và đếm lượt sử dụng trong bảng `ai_tryon_logs`.
+  - Giới hạn mặc định: **Tối đa 20 lượt phân tích AI / người dùng / ngày** (hoặc cấu hình động trong Admin). Nếu vượt ngưỡng trả về HTTP `429 Too Many Requests` kèm thông báo song ngữ thân thiện.
+- **Quyền riêng tư (Privacy):** Hình ảnh chụp thử từ webcam được xử lý cục bộ trên trình duyệt (MediaPipe Face Mesh) hoặc xóa ngay trên bộ nhớ đệm sau khi AI trả về tọa độ/kết quả, không lưu trữ ảnh mặt khách hàng trái phép.
+
+**Luồng xử lý:**
+- **Bước 1:** Kiểm tra trạng thái Auth $\rightarrow$ Chưa đăng nhập thì hiện Login Modal.
+- **Bước 2:** Xin quyền truy cập Camera (`navigator.mediaDevices.getUserMedia`), có phương án dự phòng (Fallback) upload ảnh chân dung thẳng mặt nếu thiết bị không có camera.
+- **Bước 3:** AI xác định 468 điểm mốc khuôn mặt (landmarks), tính tỷ lệ dài/rộng hàm-gò má để tự động kết luận dáng mặt (VD: *"Khuôn mặt bạn có dáng Tròn — Đề xuất gọng Vuông"*), đồng thời căn chỉnh vị trí gọng kính theo hai mắt (PD) và xoay theo góc nghiêng đầu.
+
+### 4.4 Phân hệ 4: Cấu hình Tròng Kính & Đơn Thuốc (Lens & Prescription)
+Khi xem chi tiết gọng kính (`/san-pham/:slug`), khách hàng được chọn 1 trong 3 cấu hình trước khi thêm vào giỏ:
+1. **Chỉ mua gọng kính:** Gọng + Tròng mẫu 0 độ.
+2. **Lắp tròng không độ chức năng:**
+   - Chống ánh sáng xanh (`BLUE_LIGHT`).
+   - Đổi màu ra nắng (`PHOTOCHROMIC`).
+3. **Lắp tròng có độ (Cận / Viễn / Loạn):**
+   - Khách hàng nhập thông số 2 mắt:
+     - Mắt phải (OD): `SPH`, `CYL`, `AXIS`.
+     - Mắt trái (OS): `SPH`, `CYL`, `AXIS`.
+     - Khoảng cách đồng tử (`PD` mm).
+   - Hoặc Tải lên ảnh phiếu đo thị lực (upload trực tiếp lên Cloudinary qua Presigned URL) để kỹ thuật viên đọc thông số.
+
+### 4.5 Phân hệ 5: Thuật toán Tính cước vận chuyển động (Dynamic Shipping Distance Matrix)
+- **Điểm xuất phát mặc định (Flagship Store):** `294 Phạm Văn Bạch, Phường Tân Sơn, Quận Tân Bình, TP.HCM` (lưu tọa độ `ORIGIN_LAT = 10.8231`, `ORIGIN_LNG = 106.6458` trong biến môi trường Backend).
+- **Chiến lược tính khoảng cách (Hybrid Engine):**
+  - Ưu tiên gọi Google Distance Matrix API từ địa chỉ giao hàng của khách để lấy khoảng cách đường bộ chính xác.
+  - Fallback thông minh (Khi API quá tải/mất kết nối hoặc đang tính nhẩm nhanh ở FE): Dùng công thức Haversine kết hợp hệ số khúc khuỷu đường bộ đô thị Việt Nam ($1.35$):
+    $$d_{\text{road}} = 2R \cdot \arcsin\left(\sqrt{\sin^2\left(\frac{\Delta\phi}{2}\right) + \cos(\phi_1)\cos(\phi_2)\sin^2\left(\frac{\Delta\lambda}{2}\right)}\right) \times 1.35$$
+    *(Với $R = 6371\text{ km}$).*
+
+**Bảng giá cước vận chuyển (Backend là nguồn chân lý - Single Source of Truth khi tạo đơn):**
+
+| Vùng địa lý giao hàng | Cự ly đường bộ ($d_{\text{road}}$) | Cước phí | Quy định nghiệp vụ |
+| :--- | :--- | :--- | :--- |
+| **Bán kính gần tiệm** (Tân Bình lân cận, P.15, Cống Lở, Tân Sơn...) | $\le 3.0\text{ km}$ | **0 ₫ (Freeship)** | Giao nhanh bởi nhân viên cửa hàng |
+| **Nội thành tiêu chuẩn** (Phú Nhuận, Gò Vấp, Q.12, Tân Phú, Q.3, Q.10, Bình Thạnh) | $3.1 - 10.0\text{ km}$ | **25.000 ₫** | Shipper nội thành 45 - 60 phút |
+| **Trung tâm & ngoại thành xa** (Q.1, Q.5, Q.6, Q.7, TP. Thủ Đức, Bình Tân) | $10.1 - 20.0\text{ km}$ | **45.000 ₫** | Đóng hộp chống sốc, giao trong ngày |
+| **Vùng ven & Liên tỉnh** (Củ Chi, Cần Giờ, Hà Nội, Đà Nẵng, Bình Dương...) | $> 20.0\text{ km}$ | **70.000 ₫** | Thùng carton xốp khí + bảo hiểm vỡ tròng |
+
+### 4.6 Phân hệ 6: Động cơ Khuyến mãi & Chống trục lợi Voucher (Anti-Abuse Promotion Engine)
+```mermaid
+flowchart TD
+    Start[Khách nhập mã Voucher] --> CheckExist{Mã hợp lệ & còn hạn?}
+    CheckExist -- Không --> RejectExpired[Báo lỗi: Mã không hợp lệ]
+    CheckExist -- Có --> CheckType{Loại mã Voucher}
+
+    CheckType -- EYEWEAR10 / ROSE10 --> CheckLifetime{Đã dùng lần nào trong đời chưa?<br/>Check user_id, email, phone}
+    CheckLifetime -- Đã từng dùng --> RejectLifetime[Báo lỗi: Mã chỉ dùng 1 lần trong đời]
+    CheckLifetime -- Chưa từng dùng --> ApplyVoucher[Áp dụng giảm 10%]
+
+    CheckType -- Mã Dịp Lễ TET / HOLIDAY --> CheckYear{Đã dùng trong năm nay chưa?<br/>used_year == current_year}
+    CheckYear -- Đã dùng --> RejectYear[Hiển thị Badge: Đã dùng năm nay · Mở lại năm sau]
+    CheckYear -- Chưa dùng --> ApplyHoliday[Áp dụng giảm dịp lễ]
+
+    CheckType -- Mua sỉ / VIP --> AutoTier[Mua >= 2 sp: -10%<br/>Đơn >= 2.000.000đ: -15%<br/>Áp dụng mức cao nhất, không cộng dồn]
+```
+
+**Quy tắc bất biến (Xác thực bắt buộc ở Backend khi Checkout):**
+- **Mã chào bạn mới (`EYEWEAR10` / `ROSE10`):** Tối đa 1 lần duy nhất toàn vòng đời mỗi khách hàng. Đối soát đa tầng trên TiDB bằng `user_id`, `customer_email`, `customer_phone` kết hợp khóa gợi nhớ UI tại `localStorage`.
+- **Mã dịp lễ (`is_holiday_special = true`):** Giới hạn 1 lần / 1 năm dương lịch (`used_year`). Ví dụ: Nếu đã dùng trong năm 2026, UI hiển thị badge *Đã dùng năm 2026 · Mở lại năm 2027*. Bước sang ngày 01/01/2027, câu truy vấn kiểm tra `used_year = 2027` sẽ tự động mở khóa mà không cần sửa code.
+- **Ưu đãi tự động khi mua số lượng lớn / VIP:**
+  - Mua từ 2 sản phẩm trở lên: Tự động chiết khấu 10%.
+  - Đơn hàng phân khúc VIP từ 2.000.000₫ trở lên: Tự động chiết khấu 15% (Backend cấu hình quy tắc chọn mức giảm có lợi nhất cho khách — mặc định: áp dụng mức ưu đãi cao nhất để tránh lỗ kép).
+
+### 4.7 Phân hệ 7: Thanh toán Mã QR & Quy trình Duyệt tiền Admin
+**Phương thức hỗ trợ:**
+- Chuyển khoản QR Code theo mã QR cá nhân/cửa hàng do chủ shop cung cấp hoặc VietQR động (Napas 24/7).
+- Thanh toán khi nhận hàng (COD - có thể giới hạn theo giá trị đơn nếu có tròng cắt độ riêng).
+
+**Thông số hiển thị QR Thanh toán:**
+- **Ngân hàng & Số tài khoản thụ hưởng:** Cấu hình qua biến môi trường hoặc bảng `store_settings` trong Admin.
+- **Số tiền:** Khớp chính xác 100% `total_amount` (đã trừ voucher/chiết khấu và cộng cước vận chuyển).
+- **Nội dung chuyển khoản tự động:** `KINH [Mã đơn]` (VD: `KINH 889921`). Có nút "Sao chép nhanh" STK và Nội dung CK.
+
+**Quy trình xác nhận chặt chẽ:**
+1. Khách bấm "Tôi đã chuyển khoản / Đặt hàng" $\rightarrow$ Đơn tạo với `payment_status = 'UNPAID'`, `order_status = 'PENDING'`.
+2. Hệ thống gửi Email xác nhận tiếp nhận đơn hàng qua Gmail cho khách hàng.
+3. Hệ thống bắn Push Notification (Firebase FCM) + In-app alert riêng cho vai trò `ADMIN`: *"Đơn hàng mới #KINH-889921 (1.450.000₫) đang chờ duyệt QR"*.
+4. Admin kiểm tra biến động số dư ngân hàng thực tế, vào tab "Duyệt Tiền Chuyển Khoản" bấm "Phê duyệt đã nhận tiền".
+5. Hệ thống cập nhật `payment_status = 'PAID'`, `order_status = 'ARRANGING'` (chuyển xưởng kỹ thuật mài lắp), đồng thời gửi FCM Push + Email thông báo *"Thanh toán thành công, kính của bạn đang được kỹ thuật viên gia công"*.
+
+### 4.8 Phân hệ 8: Đánh giá, Bình luận & Tương tác Mạng xã hội
+- **Hệ thống Đánh giá & Bình luận (Verified Purchase Reviews):**
+  - **Điều kiện tiên quyết:** Khách hàng chỉ được phép đánh giá (1-5 sao + bình luận + ảnh thực tế) cho sản phẩm thuộc đơn hàng đã hoàn tất (`order_status = 'COMPLETED'`). Mỗi đơn hàng chỉ đánh giá 1 lần/sản phẩm.
+  - Bình luận mới có thể ở trạng thái `APPROVED` hoặc `PENDING` (cấu hình kiểm duyệt tại Admin để ẩn spam/ngôn từ thô tục).
+  - Tự động tính lại `average_rating` và `total_reviews` của sản phẩm sau mỗi lượt duyệt.
+- **Tích hợp Kênh liên hệ & Bản đồ:**
+  - **Google Maps:** Hiển thị bản đồ vị trí cửa hàng Flagship ở trang Liên hệ / Footer + hỗ trợ chọn địa chỉ giao hàng chính xác bằng Places Autocomplete / Pin bản đồ.
+  - **Social Floating Hub:** Nút nổi truy cập nhanh Messenger, Facebook Fanpage, Zalo OA, Hotline (nằm gọn góc màn hình, không che mất nút Add-to-cart trên mobile).
+
+### 4.9 Phân hệ 9: Phân quyền & Quản trị RBAC (Role-Based Access Control)
+```mermaid
+graph TD
+    User([Người dùng xác thực]) --> Role{Kiểm tra Vai trò RBAC}
+
+    Role -- CUSTOMER --> CustUI[Giao diện Cửa hàng]
+    CustUI --> Browse[Xem kính, Bộ lọc 6 chiều]
+    CustUI --> Cart[Giỏ hàng, Đặt đơn]
+    CustUI --> TryOn[Thử kính AI: Quota 20 lượt/ngày]
+    CustUI --> Rev[Đánh giá đơn hàng COMPLETED]
+
+    Role -- STAFF --> StaffUI[Giao diện Kỹ thuật viên]
+    StaffUI --> Kanban[Kanban gia công mài lắp tròng]
+    StaffUI --> Print[In phiếu thông số đơn thuốc]
+    StaffUI --> UpdateProg[Cập nhật: ARRANGING -> READY -> SHIPPING]
+
+    Role -- ADMIN --> AdminUI[Admin Dashboard Quản trị]
+    AdminUI --> HideCust[ẨN TOÀN BỘ widget bán hàng của khách]
+    AdminUI --> ApproveQR[Duyệt tiền chuyển khoản QR]
+    AdminUI --> ManageProd[Quản lý giá, sản phẩm & ảnh Cloudinary]
+    AdminUI --> Revenue[Báo cáo doanh thu & Kiểm duyệt review]
+```
+
+**Quy tắc phân tách giao diện & bảo mật tuyệt đối:**
+- **Backend Enforcement:** Mọi API nhạy cảm bắt buộc kiểm tra Permission Class của DRF (`IsAuthenticated`, `IsStaffOrAdmin`, `IsAdminRole`). Không bao giờ chỉ ẩn nút ở Frontend.
+- **Admin Isolation:** Khi đăng nhập với vai trò `ADMIN`, giao diện tự động điều hướng vào Admin Dashboard và ẩn toàn bộ các widget bán hàng của khách (Giỏ hàng, Hotline nổi, Zalo/Messenger/Facebook widget, Chatbot khách hàng) để đảm bảo không gian quản trị tập trung.
+- **Staff Isolation:** `STAFF` chỉ thao tác trên Kanban kỹ thuật gia công tròng và in phiếu thông số; không có quyền xóa sản phẩm, sửa voucher hoặc xem báo cáo doanh thu tổng.
+- **Phân lớp thông báo (Role-based Notifications):** Khách hàng chỉ nhận thông báo đơn của mình; Staff nhận thông báo đơn đã thanh toán cần gia công; Admin nhận thông báo đơn mới chờ duyệt QR.
+
+---
+
+## 5. THIẾT KẾ CƠ SỞ DỮ LIỆU (TIDB - RELATIONAL SCHEMA)
+
+Cơ sở dữ liệu triển khai trên TiDB (tương thích MySQL 8.0), tối ưu đánh chỉ mục (`INDEX`) cho các truy vấn lọc sản phẩm, tra cứu đơn hàng và kiểm tra chống trục lợi voucher.
+
+### 5.1 Sơ đồ quan hệ thực thể (ERD)
+```mermaid
+erDiagram
+    USERS ||--o{ ORDERS : places
+    USERS ||--o{ VOUCHER_USAGES : uses
+    USERS ||--o{ REVIEWS : writes
+    USERS ||--o{ AI_TRYON_LOGS : records
+    PRODUCTS ||--o{ PRODUCT_IMAGES : contains
+    PRODUCTS ||--o{ ORDER_ITEMS : includes
+    PRODUCTS ||--o{ REVIEWS : receives
+    ORDERS ||--|{ ORDER_ITEMS : contains
+    VOUCHERS ||--o{ VOUCHER_USAGES : logs
+
+    USERS {
+        bigint id PK
+        varchar email UK
+        varchar phone
+        varchar full_name
+        enum role "CUSTOMER, STAFF, ADMIN"
+        datetime created_at
+    }
+
+    PRODUCTS {
+        bigint id PK
+        varchar slug UK
+        varchar name_vi
+        varchar name_en
+        decimal price
+        enum face_shape "ROUND, SQUARE, OVAL, LONG, ALL"
+        enum frame_style "SQUARE, ROUND, CAT_EYE, AVIATOR, RIMLESS, BROWLINE"
+        enum material "TITANIUM, ACETATE, METAL_PVD, TR90"
+        enum gender "MALE, FEMALE, UNISEX, KIDS"
+        varchar color_tone
+        int stock_quantity
+        boolean is_active
+    }
+
+    ORDERS {
+        bigint id PK
+        varchar order_code UK
+        bigint user_id FK
+        decimal subtotal
+        decimal discount_amount
+        decimal shipping_fee
+        decimal total_amount
+        enum payment_method "VIETQR, COD"
+        enum payment_status "UNPAID, PAID, REFUNDED"
+        enum order_status "PENDING, ARRANGING, READY, SHIPPING, COMPLETED, CANCELLED"
+        varchar customer_phone
+        varchar customer_email
+        text shipping_address
+        decimal shipping_lat
+        decimal shipping_lng
+        datetime created_at
+    }
+
+    VOUCHER_USAGES {
+        bigint id PK
+        bigint voucher_id FK
+        bigint user_id FK
+        varchar customer_email
+        varchar customer_phone
+        int used_year
+        datetime used_at
+    }
+
+    AI_TRYON_LOGS {
+        bigint id PK
+        bigint user_id FK
+        varchar detected_face_shape
+        datetime created_at
+    }
+```
+
+### 5.2 Chiến lược đánh Index tối ưu truy vấn (TiDB Optimization)
+- **Bảng `products`:** Composite Index trên `(is_active, frame_style, material, gender, price)` phục vụ bộ lọc 6 chiều tốc độ dưới $20\text{ ms}$.
+- **Bảng `orders`:** Index trên `(user_id, created_at DESC)`, `order_code` (Unique), và `(payment_status, order_status, created_at)` phục vụ trang Admin duyệt QR & Staff Kanban.
+- **Bảng `voucher_usages`:** Index trên `(voucher_id, customer_email, used_year)` và `(voucher_id, customer_phone, used_year)` giúp đối soát chống trục lợi theo thời gian thực.
+- **Bảng `ai_tryon_logs`:** Index trên `(user_id, created_at)` phục vụ kiểm tra quota token trong ngày (`COUNT` bản ghi từ 00:00:00 hôm nay).
+
+---
+
+## 6. ĐẶC TẢ REST API (DJANGO REST FRAMEWORK)
+
+Mọi API tuân thủ chuẩn RESTful dưới tiền tố `/api/v1/`, hỗ trợ Header `Accept-Language: vi | en` để trả thông báo song ngữ.
+
+### 6.1 Nhóm API Xác thực & Người dùng (`/api/v1/auth/`)
+| Method | Endpoint | Quyền | Mô tả chức năng |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/auth/register/` | Public | Đăng ký tài khoản bằng Email/Password |
+| `POST` | `/auth/login/` | Public | Đăng nhập lấy JWT (`access` + `refresh`) |
+| `POST` | `/auth/google/` | Public | Đăng nhập / Đăng ký qua Google/Firebase Token |
+| `POST` | `/auth/fcm-token/` | Auth | Cập nhật FCM Token thiết bị để nhận Push Notification |
+| `GET/PATCH` | `/auth/me/` | Auth | Xem & cập nhật hồ sơ cá nhân, thông số độ mắt đã lưu |
+
+### 6.2 Nhóm API Sản phẩm & Đánh giá (`/api/v1/products/`)
+| Method | Endpoint | Quyền | Mô tả chức năng |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/products/` | Public | Danh sách kính, phân trang & hỗ trợ 6 query params lọc + search |
+| `GET` | `/products/{slug}/` | Public | Chi tiết gọng kính, ảnh Cloudinary, thông số & đánh giá đã duyệt |
+| `POST` | `/products/` | Admin | Tạo mới sản phẩm & liên kết ảnh Cloudinary |
+| `PATCH/DELETE` | `/products/{id}/` | Admin | Cập nhật giá, tồn kho hoặc ẩn/xóa sản phẩm |
+| `POST` | `/products/{id}/reviews/` | Customer | Gửi đánh giá (Backend check bắt buộc đã mua & đơn `COMPLETED`) |
+| `PATCH` | `/reviews/{id}/moderate/` | Admin | Phê duyệt hoặc ẩn đánh giá |
+
+### 6.3 Nhóm API AI Try-On (`/api/v1/ai-tryon/`)
+| Method | Endpoint | Quyền | Mô tả chức năng |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/ai-tryon/quota/` | Auth (Bắt buộc) | Kiểm tra số lượt thử kính AI còn lại trong ngày |
+| `POST` | `/ai-tryon/analyze/` | Auth (Bắt buộc) | Ghi nhận lượt sử dụng, phân tích tỷ lệ mặt & trả về gợi ý gọng hợp |
+
+### 6.4 Nhóm API Giỏ hàng, Vận chuyển, Khuyến mãi & Đơn hàng (`/api/v1/orders/`)
+| Method | Endpoint | Quyền | Mô tả chức năng |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/shipping/calculate/` | Public | Tính `distance_km` (Google Distance Matrix / Haversine) & trả `shipping_fee` |
+| `POST` | `/vouchers/validate/` | Public/Auth | Kiểm tra mã voucher qua Anti-Abuse Engine, trả về số tiền được giảm |
+| `POST` | `/orders/` | Public/Auth | Tạo đơn hàng mới, tính lại toàn bộ giá ở server, gửi Gmail & Push Admin |
+| `GET` | `/orders/my-orders/` | Customer | Lịch sử đơn hàng và theo dõi tiến độ mài lắp |
+| `GET` | `/admin/orders/pending-qr/` | Admin | Danh sách đơn chờ duyệt thanh toán QR |
+| `POST` | `/admin/orders/{id}/approve-qr/` | Admin | Xác nhận đã nhận tiền $\rightarrow$ `PAID`, chuyển sang `ARRANGING`, Push khách |
+| `PATCH` | `/staff/orders/{id}/status/` | Staff/Admin | Cập nhật trạng thái Kanban (`ARRANGING` $\rightarrow$ `READY` $\rightarrow$ `SHIPPING`) |
+
+---
+
+## 7. YÊU CẦU PHI CHỨC NĂNG (NFRS) & HIỆU NĂNG
+
+1. **Core Web Vitals (Tối ưu hiển thị):**
+   - **LCP (Largest Contentful Paint):** $\le 1.2\text{ giây}$ (sử dụng Cloudinary `f_auto,q_auto` trả định dạng WebP/AVIF, preload ảnh Hero).
+   - **INP (Interaction to Next Paint):** $\le 50\text{ ms}$ (bộ lọc phản hồi mượt mà, debounce thanh tìm kiếm 300ms).
+   - **CLS (Cumulative Layout Shift):** $= 0.00$ (khai báo cố định aspect-ratio cho thẻ ảnh sản phẩm và khung Skeleton loading).
+2. **Bảo mật (Security):**
+   - Toàn bộ giá tiền, giảm giá và phí vận chuyển phải được tính toán lại hoàn toàn tại Backend khi tạo đơn; tuyệt đối không tin tưởng dữ liệu giá gửi từ Client.
+   - Chống tấn công Brute-force & Spam API bằng DRF Throttling (`AnonRateThrottle`, `UserRateThrottle`).
+   - Khóa bí mật (TiDB URI, Cloudinary API Secret, Firebase Private Key, Gmail App Password) chỉ lưu trong `.env` và cấu hình Environment Variables trên Vercel/Server, không commit lên Git.
+3. **Song ngữ (i18n):**
+   - 100% chuỗi văn bản giao diện đặt trong file `vi.json` và `en.json` (không hardcode chữ tiếng Việt/Anh trực tiếp trong JSX).
+   - Dữ liệu sản phẩm lưu cả 2 trường ngôn ngữ (`name_vi`/`name_en`, `description_vi`/`description_en`).
+
+---
+
+## 8. QUY TRÌNH KIỂM THỬ ĐƠN VỊ (UNIT TESTING)
+
+Đội ngũ Dev bắt buộc viết Unit Test cho 100% các hàm xử lý nghiệp vụ thuần (*pure functions*), Redux slices, và Django Services/Views trước khi merge code. Yêu cầu độ bao phủ (Code Coverage) tối thiểu $\ge 85\%$ cho tầng logic nghiệp vụ.
+
+### 8.1 Bộ công cụ kiểm thử
+- **Frontend:** Vitest + `@testing-library/react` + `msw` (Mock Service Worker).
+- **Backend:** `pytest` + `pytest-django` + `factory_boy`.
+
+### 8.2 Danh mục Test Cases bắt buộc phải có
+
+| Tầng | Module / Hàm xử lý | Các kịch bản kiểm thử bắt buộc (Test Cases) |
+| :--- | :--- | :--- |
+| **FE & BE** | `calculateUrbanRoadDistanceKm` & `getShippingFeeByDistance` | - Khoảng cách $\le 3.0\text{ km} \rightarrow 0₫$<br/>- Biên $3.01\text{ km} - 10.0\text{ km} \rightarrow 25.000₫$<br/>- Biên $10.01\text{ km} - 20.0\text{ km} \rightarrow 45.000₫$<br/>- $> 20.0\text{ km} \rightarrow 70.000₫$<br/>- Tọa độ không hợp lệ / Null $\rightarrow$ Throw error hoặc fallback chuẩn |
+| **FE** | `cartSlice` (Redux) | - `addToCart`: tăng số lượng nếu trùng `productId` + `lensOption`, giữ nguyên `isCartOpen = false`, cập nhật `lastCartAddedAt`<br/>- `updateQuantity`: xóa item nếu `quantity <= 0`<br/>- `mergeGuestCart`: gộp giỏ hàng đúng khi login |
+| **FE** | `filterSlice` (Redux) | - Áp dụng đồng thời cả 6 chiều lọc<br/>- `RESET_ALL_FILTERS` đưa toàn bộ state về giá trị mặc định |
+| **BE** | `PromotionEngine.validate_voucher` | - Mã không tồn tại / hết hạn $\rightarrow$ Raise `ValidationError`<br/>- Mã `EYEWEAR10`: Dùng lần 1 hợp lệ; lần 2 cùng email hoặc cùng SĐT hoặc cùng user_id $\rightarrow$ Từ chối<br/>- Mã lễ (`is_holiday_special=True`): Dùng năm 2026 hợp lệ; dùng lại năm 2026 $\rightarrow$ Từ chối; giả lập đồng hồ hệ thống sang `2027-01-01` $\rightarrow$ Cho phép dùng lại<br/>- Bulk discount: 2 sản phẩm giảm 10%; đơn $\ge 2.000.000₫$ giảm 15% |
+| **BE** | `OrderService.approve_qr_payment` | - User Role `CUSTOMER` hoặc `STAFF` gọi API duyệt QR $\rightarrow$ Trả về 403 Forbidden<br/>- Role `ADMIN` duyệt đơn `PENDING`/`UNPAID` $\rightarrow$ Đổi thành `PAID` & `ARRANGING`, trigger mock gửi FCM & Gmail |
+| **BE** | `AITryOnService.check_and_log_quota` | - Khách chưa đăng nhập (Anonymous) $\rightarrow$ Trả 401 Unauthorized<br/>- User dùng lượt thứ 1 đến 20 trong ngày $\rightarrow$ Cho phép<br/>- User dùng lượt thứ 21 trong ngày $\rightarrow$ Trả 429 Too Many Requests |
+| **BE** | `ReviewService.create_review` | - User chưa từng mua sản phẩm hoặc đơn đang `SHIPPING` $\rightarrow$ Từ chối 403<br/>- User có đơn `COMPLETED` $\rightarrow$ Tạo review thành công; gửi lần 2 cho cùng đơn $\rightarrow$ Từ chối trùng lặp |
+
+---
+
+## 9. TRIỂN KHAI & ĐÓNG GÓI (DOCKER & VERCEL)
+
+### 9.1 Quy trình môi trường Local (Docker Compose)
+- Tạo `docker-compose.yml` ở thư mục gốc khởi chạy đồng thời container `backend` (Django port 8000) và `frontend` (Vite port 5173), kết nối trực tiếp tới TiDB Cloud (hoặc TiDB container local để test).
+- Dev chỉ cần chạy lệnh `docker-compose up --build` để có đầy đủ môi trường phát triển đồng nhất.
+
+### 9.2 Quy trình Deploy Production
+- **Frontend (Vercel):**
+  - Kết nối Git repository vào Vercel, thiết lập Root Directory là `frontend/` (hoặc root tương ứng).
+  - Cấu hình `vercel.json` để rewrite mọi route về `/index.html` (tránh lỗi 404 khi F5 trên React Router).
+  - Khai báo các biến `VITE_API_BASE_URL`, `VITE_FIREBASE_CONFIG`, `VITE_GOOGLE_MAPS_KEY`, `VITE_CLOUDINARY_CLOUD_NAME`.
+- **Backend (Docker Container trên Cloud Run / VPS / Render):**
+  - Build image từ `backend/Dockerfile` (sử dụng Gunicorn + Uvicorn/WSGI).
+  - Chạy lệnh `python manage.py migrate` lên TiDB và `python manage.py seed_products` (nạp hình ảnh Cloudinary & giá sản phẩm đã có sẵn).
+
+---
+
+## 10. TIÊU CHÍ NGHIỆM THU (DEFINITION OF DONE)
+
+Một tính năng chỉ được coi là hoàn thành (Done) khi thỏa mãn đồng thời:
+1. Code chạy đúng 100% đặc tả nghiệp vụ và hỗ trợ đủ 2 ngôn ngữ `vi` / `en`.
+2. Không có lỗi TypeScript (`tsc --noEmit` pass) và không có warning React Hooks.
+3. Hiển thị mượt mà trên cả Desktop và Mobile (375px trở lên) không vỡ layout.
+4. Viết đầy đủ Unit Test và toàn bộ bộ test (`npm run test` & `pytest`) vượt qua 100% với Code Coverage $\ge 85\%$.

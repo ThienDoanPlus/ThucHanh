@@ -1,0 +1,6 @@
+{
+  "name": "LUMINA OPTICS — Eyewear E-Commerce & AI Try-On",
+  "description": "Bilingual (VI/EN) online eyewear boutique with 6-dimensional frame filtering, Gemini AI Virtual Try-On, prescription lens configuration, dynamic distance-based shipping, anti-abuse vouchers, and QR code checkout.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

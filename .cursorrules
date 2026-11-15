@@ -1,0 +1,43 @@
+# LUMINA OPTICS — AI AGENT CODING RULES & INSTRUCTIONS
+# Full directives located at: PROJECT_RULES.md and SRS_EYEWEAR_ECOMMERCE.md
+
+You are the Senior Lead Fullstack Architect & Eyewear Tech Lead for the LUMINA OPTICS Eyewear E-Commerce Platform.
+Whenever generating, editing, or reviewing code for this project, you MUST strictly adhere to the following rules:
+
+1. ARCHITECTURAL DECOUPLING (Phase 2 React Native Readiness):
+   - Keep business logic in `src/utils/`, API clients in `src/services/`, global state in `src/store/` (Redux Toolkit), and hooks in `src/hooks/`.
+   - Never couple business logic directly to DOM/HTML components.
+
+2. MOBILE-FIRST ADD-TO-CART UX:
+   - Clicking "Add to Cart" NEVER opens `CartDrawer` automatically.
+   - Trigger CSS animations: `cartBump` (±14° rotation in 0.65s), `badgePop`, floating `+1 👓` (`flyItemFade`), and toggle button text to "Đã thêm ✓" for exactly 1400ms (with timeout cleanup).
+   - Clicking an item in CartDrawer must close drawer, navigate to `/san-pham/:slug`, and call `window.scrollTo({ top: 0, behavior: 'smooth' })`.
+
+3. AI VIRTUAL TRY-ON & TOKEN GUARD:
+   - GUEST users cannot use AI Try-On -> Prompt Google/Gmail login modal.
+   - Max 20 analyses/user/day (Backend returns 429 Too Many Requests if exceeded).
+   - Clean up webcam streams upon component unmount.
+
+4. SHIPPING DISTANCE MATRIX:
+   - Origin: 294 Pham Van Bach, P. Tan Son, Tan Binh, HCMC (10.8231, 106.6458).
+   - Road distance: Haversine * 1.35.
+   - Tiers: <= 3km: 0₫; 3.1-10km: 25.000₫; 10.1-20km: 45.000₫; > 20km: 70.000₫.
+
+5. PROMOTIONS & VOUCHER ANTI-ABUSE:
+   - EYEWEAR10 / ROSE10: 1 time per user lifetime (checked via userId, email, phone on TiDB).
+   - Holiday vouchers: 1 time per calendar year (used_year).
+   - Bulk: >= 2 items -> 10% off; >= 2.000.000₫ -> 15% off (apply highest beneficial non-stacking).
+
+6. VIETQR & RBAC:
+   - Order created with UNPAID, PENDING -> VietQR format: KINH [OrderCode].
+   - Admin approves -> PAID, ARRANGING -> triggers FCM push & Gmail.
+   - Admin role UI MUST hide all customer-facing widgets (CartDrawer, Floating Hub).
+   - Staff role UI can only access the Lens Kanban.
+
+7. STRICT TYPESCRIPT & I18N:
+   - No `any` type (strict mode enabled).
+   - 100% of UI strings must use `react-i18next` (`vi`/`en`). No hardcoded Vietnamese/English strings in JSX.
+   - Code coverage requirement >= 85% with Vitest & Pytest.
+
+For full technical specifications, refer to [PROJECT_RULES.md](file:///Users/macbook/Desktop/Rayban%20Eyewear/PROJECT_RULES.md) and [SRS_EYEWEAR_ECOMMERCE.md](file:///Users/macbook/Desktop/Rayban%20Eyewear/SRS_EYEWEAR_ECOMMERCE.md).
+

@@ -1,0 +1,171 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Registered customer, staff, or admin profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "format": "email", "maxLength": 160 },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "phone": { "type": "string", "maxLength": 20 },
+        "role": { "type": "string", "enum": ["CUSTOMER", "STAFF", "ADMIN"] },
+        "fcmToken": { "type": "string", "maxLength": 512 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "displayName", "role", "createdAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Eyewear frame product catalog item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "slug": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "sku": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "nameVi": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "nameEn": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "price": { "type": "number" },
+        "stock": { "type": "integer" },
+        "frameStyle": { "type": "string", "enum": ["SQUARE", "ROUND", "CAT_EYE", "AVIATOR", "RIMLESS", "BROWLINE"] },
+        "material": { "type": "string", "enum": ["TITANIUM", "ACETATE", "METAL_PVD", "TR90"] },
+        "gender": { "type": "string", "enum": ["MALE", "FEMALE", "UNISEX", "KIDS"] },
+        "colorTone": { "type": "string", "enum": ["BLACK", "TORTOISE", "SILVER", "GOLD", "ROSE", "CLEAR_CRYSTAL"] },
+        "isActive": { "type": "boolean" }
+      },
+      "required": ["id", "slug", "sku", "nameVi", "nameEn", "price", "stock", "frameStyle", "material", "gender", "colorTone", "isActive"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer eyewear order with prescription, shipping, voucher, and QR payment state",
+      "type": "object",
+      "properties": {
+        "orderCode": { "type": "string", "minLength": 4, "maxLength": 32 },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "customerName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "customerEmail": { "type": "string", "format": "email", "maxLength": 160 },
+        "customerPhone": { "type": "string", "minLength": 8, "maxLength": 20 },
+        "shippingAddress": { "type": "string", "minLength": 5, "maxLength": 300 },
+        "distanceKm": { "type": "number" },
+        "shippingFee": { "type": "number" },
+        "subtotal": { "type": "number" },
+        "discountAmount": { "type": "number" },
+        "totalAmount": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["QR_CODE", "COD"] },
+        "paymentStatus": { "type": "string", "enum": ["UNPAID", "PAID"] },
+        "orderStatus": { "type": "string", "enum": ["PENDING", "ARRANGING", "READY", "SHIPPING", "COMPLETED", "CANCELLED"] },
+        "voucherCode": { "type": "string", "maxLength": 32 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["orderCode", "userId", "customerName", "customerEmail", "customerPhone", "shippingAddress", "distanceKm", "shippingFee", "subtotal", "discountAmount", "totalAmount", "paymentMethod", "paymentStatus", "orderStatus", "createdAt", "updatedAt"]
+    },
+    "VoucherUsage": {
+      "title": "VoucherUsage",
+      "description": "Anti-abuse voucher usage ledger",
+      "type": "object",
+      "properties": {
+        "voucherCode": { "type": "string", "minLength": 2, "maxLength": 32 },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "customerEmail": { "type": "string", "maxLength": 160 },
+        "customerPhone": { "type": "string", "maxLength": 20 },
+        "usedYear": { "type": "integer" },
+        "orderCode": { "type": "string", "maxLength": 32 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["voucherCode", "userId", "customerEmail", "customerPhone", "usedYear", "orderCode", "createdAt"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Verified purchase product review",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "orderId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "authorName": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "rating": { "type": "integer" },
+        "comment": { "type": "string", "minLength": 3, "maxLength": 1000 },
+        "status": { "type": "string", "enum": ["PENDING", "APPROVED", "HIDDEN"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productId", "orderId", "userId", "authorName", "rating", "comment", "status", "createdAt"]
+    },
+    "AiTryOnLog": {
+      "title": "AiTryOnLog",
+      "description": "Daily quota tracking log for AI Virtual Try-On",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "detectedFaceShape": { "type": "string", "enum": ["ROUND", "SQUARE", "OVAL", "LONG"] },
+        "dayKey": { "type": "string", "minLength": 8, "maxLength": 16 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "detectedFaceShape", "dayKey", "createdAt"]
+    },
+    "AppNotification": {
+      "title": "AppNotification",
+      "description": "Role-targeted push/in-app order status notification",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "targetRole": { "type": "string", "enum": ["CUSTOMER", "STAFF", "ADMIN"] },
+        "titleVi": { "type": "string", "maxLength": 160 },
+        "titleEn": { "type": "string", "maxLength": 160 },
+        "bodyVi": { "type": "string", "maxLength": 400 },
+        "bodyEn": { "type": "string", "maxLength": 400 },
+        "orderCode": { "type": "string", "maxLength": 32 },
+        "isRead": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "targetRole", "titleVi", "titleEn", "bodyVi", "bodyEn", "isRead", "createdAt"]
+    },
+    "StoreSetting": {
+      "title": "StoreSetting",
+      "description": "Public store QR and banking display configuration",
+      "type": "object",
+      "properties": {
+        "bankId": { "type": "string", "maxLength": 32 },
+        "accountNo": { "type": "string", "maxLength": 40 },
+        "accountName": { "type": "string", "maxLength": 100 },
+        "customQrUrl": { "type": "string", "maxLength": 1000 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["bankId", "accountNo", "accountName", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles isolated to owner and admin"
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Eyewear catalog products"
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Customer orders and QR payment verification state"
+    },
+    "/voucher_usages/{usageId}": {
+      "schema": { "$ref": "#/entities/VoucherUsage" },
+      "description": "Anti-abuse voucher usage records"
+    },
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/Review" },
+      "description": "Verified purchase product reviews"
+    },
+    "/ai_tryon_logs/{logId}": {
+      "schema": { "$ref": "#/entities/AiTryOnLog" },
+      "description": "Daily AI Try-On token quota logs"
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/AppNotification" },
+      "description": "Role-targeted order notifications"
+    },
+    "/store_settings/{settingId}": {
+      "schema": { "$ref": "#/entities/StoreSetting" },
+      "description": "Store QR payment configuration"
+    }
+  }
+}
