@@ -1,141 +1,141 @@
-# LUMINA OPTICS — Eyewear E-Commerce & AI Virtual Try-On Platform
+# LUMINA OPTICS — Nền tảng Thương mại Điện tử Mắt kính & Thử kính Ảo AI
 
-Enterprise-grade eyewear e-commerce platform built with React 19, TypeScript, Vite, Tailwind CSS, and Python/Django services. The system features browser-based AI Virtual Try-On, 6-dimensional facial geometry filters, dynamic urban road delivery calculation, anti-abuse promotion validation, and automated VietQR payment reconciliation.
-
----
-
-## Overview
-
-The platform addresses operational and user-experience challenges specific to online optical retail:
-
-- **6-Dimensional Frame Filtering:** Real-time bi-directional URL synchronization across face shape (Round, Square, Oval, Long), frame style (Square, Round, Cat-Eye, Aviator, Rimless, Browline), frame material (Titanium, Acetate, Metal PVD, TR90), target audience, color tone, and price tiers.
-- **Mobile-First Bag UX:** Non-disruptive add-to-bag interaction with micro-animations and zero full-screen drawer takeovers during catalog browsing.
-- **AI Virtual Try-On & Rate Limiting:** Facial landmark detection and shape recommendation powered by Gemini Multimodal Vision, secured behind authentication with a strict quota of 20 daily requests per user.
-- **Urban Shipping Distance Matrix:** Haversine formula adjusted by an urban circuity multiplier (1.35) for Vietnam road networks, with tiered delivery fees computed strictly on the backend.
-- **Anti-Abuse Promotion Engine:** Multi-factor identity auditing (User ID, Email, Phone) preventing duplicate lifetime redemptions of welcome vouchers, calendar-year rollover for seasonal promotions, and tiered bulk discounting.
-- **VietQR Payment Reconciliation:** Dynamic Napas 24/7 QR generation with structured syntax (`KINH [OrderCode]`) and administrative approval workflows.
-- **Role-Based Access Control (RBAC):** Strict separation of Customer, Staff, and Admin interfaces with complete UI isolation.
+Hệ thống thương mại điện tử chuyên ngành mắt kính được xây dựng trên nền tảng React 19, TypeScript, Vite, Tailwind CSS kết hợp dịch vụ Backend Python/Django và Express. Nền tảng tích hợp tính năng Thử kính Ảo (AI Virtual Try-On) trực tiếp trên trình duyệt, bộ lọc gọng kính 6 chiều theo tỷ lệ khuôn mặt, công thức tính cước vận chuyển đường bộ đô thị linh hoạt, động cơ chống trục lợi mã giảm giá và quy trình thanh toán VietQR đối soát hai bước.
 
 ---
 
-## Technology Stack
+## Tổng quan hệ thống
 
-### Client Layer
-- **Framework:** React 19, TypeScript (Strict Mode)
-- **Tooling & Bundler:** Vite 8
-- **Styling:** Tailwind CSS 4
-- **State Management:** Redux Toolkit (auth, cart, filter, notification slices)
-- **Routing:** React Router v6
-- **Internationalization:** react-i18next (Vietnamese and English)
+Hệ thống giải quyết triệt để các bài toán đặc thù của thương mại điện tử ngành khúc xạ và thời trang mắt kính:
 
-### Backend & Services
-- **API Runtime:** Python 3.11 / Django Rest Framework (DRF) & Express middleware
-- **Database:** TiDB (Distributed SQL, MySQL 8.0 compatible)
-- **Media Storage:** Cloudinary
-- **Authentication & Notifications:** Firebase Auth, Firebase Cloud Messaging (FCM), Gmail SMTP
+- **Bộ lọc gọng kính 6 chiều:** Đồng bộ hai chiều theo thời gian thực với URL Query String trên 6 tiêu chí: Dáng mặt (Tròn, Vuông, Trái xoan, Dài), Kiểu dáng gọng (7 kiểu), Chất liệu (Titanium, Acetate, Kim loại mạ PVD, TR90), Đối tượng sử dụng, Tông màu sắc và Khoảng giá. Tích hợp cơ chế Debounce 300ms cho ô tìm kiếm.
+- **Trải nghiệm Giỏ hàng Mobile-First:** Thao tác thêm vào giỏ không mở ngăn kéo che màn hình duyệt danh mục; phản hồi thị giác tức thì qua hiệu ứng hoạt ảnh CSS và tự động hoàn nguyên nhãn nút sau 1400ms.
+- **Thử kính Ảo AI & Kiểm soát Hạn mức:** Nhận diện 468 điểm mốc khuôn mặt và đề xuất dáng kính tương thích qua Gemini Multimodal Vision. Tính năng được bảo vệ bởi lớp xác thực người dùng kèm hạn mức cứng 20 lượt phân tích/ngày/tài khoản (HTTP 429).
+- **Thuật toán Cước Vận chuyển Đô thị:** Xác định khoảng cách từ cửa hàng Flagship (294 Phạm Văn Bạch, P. Tân Sơn, Q. Tân Bình, TP.HCM) theo công thức Haversine nhân hệ số khúc khuỷu đường bộ Việt Nam (1.35), phân tầng giá cước chính xác từ phía máy chủ.
+- **Động cơ Khuyến mãi Chống Trục lợi:** Đối soát danh tính đa tầng (User ID, Email, Số điện thoại) để ngăn chặn việc tái sử dụng mã chào mừng trọn đời, tự động mở khóa mã ưu đãi theo năm dương lịch mới và áp dụng chiết khấu bậc thang theo số lượng/giá trị đơn.
+- **Thanh toán VietQR & Phân xưởng Kỹ thuật:** Tự động sinh mã QR Napas 24/7 theo cú pháp chuẩn `KINH [Mã đơn]`, quy trình Admin phê duyệt biến động số dư trước khi chuyển trạng thái sang phân xưởng mài lắp kính (Kanban).
+- **Phân quyền RBAC & Cô lập Giao diện:** Tách biệt tuyệt đối quyền hạn giữa Khách hàng, Kỹ thuật viên (Staff) và Quản trị viên (Admin). Khi đăng nhập Admin, hệ thống ẩn toàn bộ các tiện ích bán hàng của khách để tối ưu không gian quản trị.
 
-### Quality Assurance
+---
+
+## Kiến trúc Công nghệ
+
+### Tầng Giao diện (Client)
+- **Framework & Ngôn ngữ:** React 19, TypeScript (Chế độ nghiêm ngặt - Strict Mode)
+- **Công cụ đóng gói:** Vite 8
+- **Thiết kế giao diện:** Tailwind CSS 4
+- **Quản lý trạng thái:** Redux Toolkit (Slices: auth, cart, filter, notification)
+- **Điều hướng:** React Router v6
+- **Đa ngôn ngữ:** react-i18next (Hỗ trợ toàn diện Tiếng Việt và Tiếng Anh)
+
+### Tầng Dịch vụ & Dữ liệu (Backend & Services)
+- **Môi trường API:** Python 3.11 / Django Rest Framework (DRF) & Express middleware
+- **Cơ sở dữ liệu:** TiDB (Hệ cơ sở dữ liệu phân tán tương thích chuẩn MySQL 8.0)
+- **Lưu trữ tệp đa phương tiện:** Cloudinary (Lưu trữ ảnh sản phẩm, ảnh phiếu đo thị lực qua Presigned URL)
+- **Xác thực & Thông báo:** Firebase Authentication (Google/Gmail OAuth), Firebase Cloud Messaging (FCM), Gmail SMTP
+
+### Kiểm thử & Đảm bảo Chất lượng (QA)
 - **Frontend Testing:** Vitest, React Testing Library, jsdom
 - **Backend Testing:** Pytest, pytest-django
 
 ---
 
-## Directory Structure
+## Cấu trúc Thư mục
 
 ```text
 .
-├── PROJECT_RULES.md            # Technical constraints and architectural guidelines
-├── SRS_EYEWEAR_ECOMMERCE.md    # Software Requirements Specification (v1.0.0)
-├── .cursorrules                # System instructions for AI assistants
-├── docker-compose.yml          # Container orchestration for local development
+├── PROJECT_RULES.md            # Chỉ thị kỹ thuật và quy chuẩn kiến trúc bắt buộc
+├── SRS_EYEWEAR_ECOMMERCE.md    # Tài liệu đặc tả yêu cầu nghiệp vụ và kỹ thuật (v1.0.0)
+├── .cursorrules                # Chỉ thị hệ thống nạp tự động cho AI Assistant
+├── docker-compose.yml          # Điều phối môi trường phát triển đồng nhất
 ├── package.json
 ├── tsconfig.json
 ├── vite.config.ts
 ├── vitest.config.ts
 ├── backend/
-│   ├── apps/core/services.py   # Shipping, voucher, quota, and review services
-│   ├── schema_tidb.sql         # Relational database schema with composite indices
-│   └── tests/                  # Backend unit test suites
+│   ├── apps/core/services.py   # Xử lý nghiệp vụ cước vận chuyển, voucher, quota, đánh giá
+│   ├── schema_tidb.sql         # Lược đồ cơ sở dữ liệu quan hệ kèm composite index
+│   └── tests/                  # Bộ kiểm thử đơn vị tầng Backend (Pytest)
 └── src/
-    ├── components/             # Reusable UI components
-    ├── hooks/                  # Custom React hooks (debounce, filter sync)
-    ├── i18n/                   # Localization dictionaries (vi, en)
-    ├── pages/                  # Route-level views (Storefront, Admin, Staff Kanban)
-    ├── services/               # API clients and Firebase connectors
-    ├── store/slices/           # Redux Toolkit state slices
-    ├── types/                  # Shared domain types and interfaces
-    ├── utils/                  # Pure utility functions (shipping, voucher validation)
-    └── __tests__/              # Frontend test suites
+    ├── components/             # Thư viện component UI phân lớp theo tính năng
+    ├── hooks/                  # Custom React hooks (useDebounce, useUrlFilterSync)
+    ├── i18n/                   # Từ điển bản địa hóa song ngữ (vi.json, en.json)
+    ├── pages/                  # Các trang màn hình chính (Storefront, Admin, Staff Kanban)
+    ├── services/               # Module gọi API RESTful và kết nối Firebase
+    ├── store/slices/           # Redux Slices quản lý state toàn cục
+    ├── types/                  # Khai báo kiểu dữ liệu TypeScript dùng chung
+    ├── utils/                  # Hàm xử lý logic thuần (Haversine, kiểm tra voucher)
+    └── __tests__/              # Bộ kiểm thử đơn vị tầng Frontend (Vitest)
 ```
 
 ---
 
-## Getting Started
+## Hướng dẫn Cài đặt & Khởi chạy
 
-### Prerequisites
+### Yêu cầu hệ thống
 - Node.js >= 20.20.0
 - Python >= 3.11
-- npm or bun
+- Trình quản lý gói npm hoặc bun
 
-### Installation
+### Các bước cài đặt
 
 ```bash
-# Clone the repository
+# Sao chép mã nguồn về máy cục bộ
 git clone git@github.com:ThienDoanPlus/ThucHanh.git
 cd "Rayban Eyewear"
 
-# Install frontend dependencies
+# Cài đặt các gói phụ thuộc Frontend
 npm install --legacy-peer-deps
 
-# Install backend dependencies
+# Cài đặt các gói phụ thuộc Backend
 pip install -r backend/requirements.txt
 ```
 
-### Environment Configuration
+### Cấu hình Biến Môi trường
 
-Copy the example environment configuration and supply your keys:
+Tạo tệp cấu hình môi trường cục bộ từ mẫu có sẵn:
 
 ```bash
 cp .env.example .env.local
 ```
 
-Required variables:
-- `GEMINI_API_KEY`: Google Gemini API key for AI Try-On analysis
-- `VITE_FIREBASE_CONFIG`: Firebase configuration object
-- `CLOUDINARY_URL`: Cloudinary storage credentials
+Các biến môi trường trọng yếu:
+- `GEMINI_API_KEY`: Khóa API Google Gemini phục vụ phân tích khuôn mặt thử kính
+- `VITE_FIREBASE_CONFIG`: Chuỗi cấu hình kết nối Firebase Authentication & Firestore
+- `CLOUDINARY_URL`: Thông tin cấu hình lưu trữ ảnh Cloudinary
 
-### Running the Application
+### Khởi chạy môi trường phát triển
 
 ```bash
-# Start local development server (Vite + Express API)
+# Khởi động máy chủ phát triển tích hợp (Vite + Express API)
 npm run dev
 ```
 
-The application will be accessible at `http://localhost:3000`.
+Ứng dụng sẽ hoạt động tại địa chỉ mặc định: `http://localhost:3000`.
 
 ---
 
-## Testing & Verification
+## Quy trình Kiểm thử & Nghiệm thu
 
-Both frontend and backend suites are configured for continuous verification:
+Toàn bộ các tầng logic nghiệp vụ đều có bộ kiểm thử tự động đi kèm:
 
 ```bash
-# Run frontend unit tests
+# Chạy kiểm thử đơn vị Frontend (Vitest)
 npm test
 
-# Run TypeScript strict type-check
+# Kiểm tra an toàn kiểu dữ liệu TypeScript
 npm run lint
 
-# Run backend unit tests
+# Chạy kiểm thử đơn vị Backend (Pytest)
 PYTHONPATH=backend python3 -m pytest backend/tests
 
-# Build production bundle
+# Đóng gói sản phẩm cho môi trường Production
 npm run build
 ```
 
 ---
 
-## Documentation
+## Tài liệu Kỹ thuật Chi tiết
 
-- [PROJECT_RULES.md](PROJECT_RULES.md): Architectural constraints, design patterns, and pre-commit checklist.
-- [SRS_EYEWEAR_ECOMMERCE.md](SRS_EYEWEAR_ECOMMERCE.md): Business requirements, database entity diagrams, and API specifications.
+- [PROJECT_RULES.md](PROJECT_RULES.md): 10 nguyên tắc bất biến, quy chuẩn lập trình và checklist nghiệm thu.
+- [SRS_EYEWEAR_ECOMMERCE.md](SRS_EYEWEAR_ECOMMERCE.md): Bảng đặc tả chi tiết 10 phân hệ nghiệp vụ, thiết kế ERD cơ sở dữ liệu và danh mục REST API.
